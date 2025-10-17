@@ -1,0 +1,120 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #E00055, #611A1A);
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Top bar */
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    background: rgba(255, 255, 255, 0);
+    backdrop-filter: none;
+    position: sticky;
+    top: 0;
+}
+
+/* Home button */
+.home-btn {
+    position: absolute;
+    left: 1em;
+    background: white;
+    color: #E00055;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5em 1em;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
+}
+.home-btn:hover {
+    background: #ffe0eb;
+}
+
+
+/* Search bar */
+.search-bar {
+    width: 50%;
+    padding: 0.6em 1em;
+    border-radius: 30px;
+    border: 2px solid white;
+    background: rgba(255, 255, 255, 0); /* transparent */
+    color: white;
+    outline: none;
+    font-size: 1em;
+}
+
+.search-bar::placeholder {
+    color: rgba(255,255,255,0.7); /* lighter placeholder for contrast */
+}
+
+/* Centered logo */
+.center-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.logo {
+    width: 200px;
+    height: auto;
+    animation: fadeIn 1.5s ease;
+}
+
+/* Bottom bar */
+.bottom-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8em;
+    padding: 1.5em;
+    background: rgba(255, 255, 255, 0); /* fully transparent */
+    backdrop-filter: none;
+}
+
+/* Prompt box */
+.prompt-box {
+    width: 80%;
+    min-height: 60px;
+    border-radius: 10px;
+    border: 2px solid white;
+    background: rgba(255, 255, 255, 0); /* transparent */
+    color: white;
+    padding: 0.8em;
+    font-size: 1em;
+    resize: none;
+    outline: none;
+}
+
+.prompt-box::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+
+/* Dropdown */
+.video-select {
+    width: 40%;
+    padding: 0.6em;
+    border-radius: 8px;
+    border: 2px solid white;
+    background: rgba(255, 255, 255, 0); /* transparent */
+    color: white;
+    font-size: 1em;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

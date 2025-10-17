@@ -1,0 +1,62 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Full-page container */
+body, html {
+    height: 100%;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Background gradient */
+body {
+    background: linear-gradient(135deg, #E00055, #611A1A);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Logo and title layout */
+.home-container {
+    text-align: center;
+}
+
+/* Logo styling */
+.logo {
+    width: 180px;         /* Adjust as needed */
+    height: auto;
+    margin-bottom: 20px;
+}
+
+/* “KEYFRAME” title */
+.title {
+    color: white;
+    font-size: 3rem;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.home-container {
+    opacity: 0;
+    animation: fadeIn 2s ease forwards;
+}
+
+.logo {
+    width: 180px;
+    height: auto;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
