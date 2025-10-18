@@ -4,9 +4,9 @@ import os
 import base64
 import subprocess
 
-NEBIUS_KEY = "eyJhbGciOiJIUzI1NiIsImtpZCI6IlV6SXJWd1h0dnprLVRvdzlLZWstc0M1akptWXBvX1VaVkxUZlpnMDRlOFUiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJnb29nbGUtb2F1dGgyfDExNTU3NzQzMTY1MjA4OTY3MjQ5NCIsInNjb3BlIjoib3BlbmlkIG9mZmxpbmVfYWNjZXNzIiwiaXNzIjoiYXBpX2tleV9pc3N1ZXIiLCJhdWQiOlsiaHR0cHM6Ly9uZWJpdXMtaW5mZXJlbmNlLmV1LmF1dGgwLmNvbS9hcGkvdjIvIl0sImV4cCI6MTkxNzQ5MDMzOSwidXVpZCI6IjAxOTliY2RlLWNlMGUtNzU0ZS1iNTAyLTJmMTQwMGFlYjkzYSIsIm5hbWUiOiJLZXlGcmFtZSIsImV4cGlyZXNfYXQiOiIyMDMwLTEwLTA2VDA0OjEyOjE5KzAwMDAifQ.lbqGwpNFwCZG4RwUp1T6r1q09fOYW4YUH5UdWR8woBA"
+NEBIUS_KEY = ""
 
-def invoke_nebius_image_generation(NEBIUS_KEY, prompt):
+def invoke_nebius_image_generation(prompt):
     client = OpenAI(
         base_url="https://api.studio.nebius.com/v1",
         api_key=NEBIUS_KEY,
@@ -30,6 +30,7 @@ def invoke_nebius_image_generation(NEBIUS_KEY, prompt):
     return completion   # returns an object of ImagesResponse. Could also alter to return json: json.loads(completion.to_json())
 
 def decode_b64_images(completion, i):
+    os.makedirs("generated_images", exist_ok=True)
     image_bytes = base64.b64decode(completion.data[0].b64_json)
     with open(f"generated_images/image_{i}.png", "wb") as f:
         f.write(image_bytes)
@@ -53,9 +54,8 @@ def create_video():
 def main():
     prompt = "A picture of a comic book about 2 superheros flying over a city and rescuing people."
 
-    os.makedirs("generated_images", exist_ok=True)
     for i in range(3):
-        completion = invoke_nebius_image_generation(NEBIUS_KEY, prompt)
+        completion = invoke_nebius_image_generation(prompt)
         print(f"{i}: {completion.to_json()}")   # debug
 
         decode_b64_images(completion, i)    # saves the image to a file.
