@@ -1,0 +1,224 @@
+.splashSection {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    padding: 5rem 0 6rem 0;
+}
+
+.topContentWrapper {
+    margin-top: 15vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mainLogo {
+    margin-bottom: 5rem;
+    transform: scale(1.5);
+}
+
+.welcomeText {
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0rem;
+    font-family: 'LOVELO';
+}
+
+
+.promptSection {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 2rem;
+}
+
+.promptContainer {
+    width: 100%;
+    max-width: 56rem;
+    padding-top: 15vh;
+}
+
+.promptSectionLogo {
+    margin-bottom: 5rem;
+    display: flex;
+    justify-content: center;
+    transform: scale(1.5);
+    padding: 3rem;
+}
+
+
+.ctaLink {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s;
+    text-decoration: none;
+    font-family: 'LOVELO';
+    padding: 15rem;
+}
+
+.ctaLink:hover {
+    transform: scale(1.05);
+}
+
+.ctaText {
+    font-size: 1.25rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: white;
+    transition: transform 0.3s ease-in-out;
+}
+
+.ctaLink:hover .ctaText {
+    transform: scale(1.05);
+}
+
+.arrowIcon {
+    width: 2rem;
+    height: 2rem;
+    color: white;
+    transition: transform 0.2s;
+}
+
+.ctaLink:hover .arrowIcon {
+    transform: translateY(4px) scale(1.1);
+}
+
+@keyframes ctaGlow {
+    0% {
+        opacity: 1;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+
+    50% {
+        opacity: 0.8;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+
+    100% {
+        opacity: 1;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+}
+
+.ctaLink:hover .ctaText,
+.ctaLink:focus .ctaText,
+.ctaLink:hover .arrowIcon,
+.ctaLink:focus .arrowIcon {
+    animation: ctaGlow 1.5s infinite ease-in-out;
+}
+
+
+.promptInput {
+    width: 100%;
+    resize: none;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.2s;
+}
+
+.promptInput::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+
+}
+
+.promptInput:focus {
+    border-color: white;
+    outline: none;
+}
+
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.styleButtons {
+    display: flex;
+    gap: 1rem;
+}
+
+.styleButton {
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background-color: transparent;
+    color: white;
+    cursor: pointer;
+    font-family: 'LOVELO';
+}
+
+.styleButton:hover:not(.selected) {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.styleButton.selected {
+    background-color: white;
+    color: black;
+    border-color: white;
+    box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.1);
+}
+
+.submitButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: white;
+    background-color: #E00055;
+    transition: background-color 0.2s;
+    cursor: pointer;
+    border: none;
+    font-family: 'LOVELO';
+}
+
+.submitButton:hover {
+    background-color: #C00044;
+}
+
+.submitButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.loadingIcon {
+    margin-right: 0.75rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.error {
+    color: #F87171;
+    font-weight: 500;
+    text-align: center;
+    margin-top: 1rem;
+}
