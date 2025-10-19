@@ -7,14 +7,16 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import styles from './Navbar.module.css';
 
-export function Navbar() {
+export function Navbar({ activePath }: { activePath?: string }) {
     const pathname = usePathname();
 
-
     const isActive = (href: string) => {
+        if (activePath === href) {
+            return true;
+        }
 
         if (href === '/') {
-            return pathname === '/' || pathname === '/#prompt-section';
+            return pathname === '/' || pathname.startsWith('/status/');
         }
         return pathname.startsWith(href);
     };
@@ -32,15 +34,15 @@ export function Navbar() {
                 </div>
 
                 <div className={styles.navLinks}>
-                    {/* 1. 'Generate' Link: Active on root path '/' */}
+                    {/* 1. 'Generate' Link */}
                     <Link
-                        href="#prompt-section"
+                        href="/"
                         className={`${styles.navLink} ${isActive('/') ? styles.activeLink : ''}`}
                     >
                         Generate
                     </Link>
 
-                    {/* 2. 'Community Videos' Link: Active on /feed path */}
+                    {/* 2. 'Community Videos' Link */}
                     <Link
                         href="/feed"
                         className={`${styles.navLink} ${isActive('/feed') ? styles.activeLink : ''}`}
