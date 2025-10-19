@@ -12,7 +12,7 @@
 
 ---
 
-## 2. Setup & Static Assets (CRITICAL)
+## 2. Setup & Static Assets
 
 Before running the app, you must place the following static files in the specified location for the design and mock API to function: Will still work if you don't.
 
@@ -49,7 +49,7 @@ These files simulate the Node.js API Gateway and are essential for local develop
 
 ---
 
-## 4. Quality & Collaboration
+## 4. Pull Request
 
 ### Linting (Before Pull Request)
 
