@@ -41,5 +41,5 @@ yarn-error.log*
 next-env.d.ts
 
 # mock thumbnails and mock videos
-public/assets/videos/*.mp4
-public/assets/thumbnails/*.png
+public/thumbnails/videos/*.mp4
+public/videos/thumbnails/*.png

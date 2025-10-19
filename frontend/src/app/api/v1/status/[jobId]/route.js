@@ -20,8 +20,8 @@ export async function GET(request, { params }) {
 
         status = 'COMPLETE';
         progress = 100;
-        videoUrl = `/videos/mock_fortnite.mp4`;
-        thumbnailUrl = `/thumbnails/mock_fortnite.png`;
+        videoUrl = `/videos/mock_meme.mp4`;
+        thumbnailUrl = `/thumbnails/mock_meme.png`;
     }
 
     return NextResponse.json({
