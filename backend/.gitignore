@@ -1,2 +1,10 @@
 .env
 /venv
+#previous images and videos
+/generated_images/*
+/generated_videos/*
+*.mp4
+
+#used for testing without api calls
+quick_video.py
+play_video.py
