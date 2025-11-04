@@ -1,0 +1,12 @@
+celery
+python-dotenv
+psycopg2-binary (PostgreSQL)
+redis
+openai
+boto3 (AWS - for Polly and S3)
+requests
+mutagen (for audio duration)
+
+
+//npm install
+//pip install celery python-dotenv psycopg2-binary redis openai boto3 requests mutagen
