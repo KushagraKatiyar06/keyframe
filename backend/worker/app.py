@@ -19,8 +19,8 @@ app = Celery(
     'keyframe_worker',
     broker=redis_url,
     backend=redis_url,
-    broker_use_ssl=broker_use_ssl,
-    redis_backend_use_ssl=broker_use_ssl
+    # broker_use_ssl=broker_use_ssl,
+    # redis_backend_use_ssl=broker_use_ssl
 )
 
 # celery configuration
@@ -32,14 +32,18 @@ app.conf.update(
     enable_utc=True,
     task_time_limit=300,
     worker_log_format='[%(asctime)s: %(levelname)s/%(processName)s] %(message)s',
-    worker_task_log_format='[%(asctime)s: %(levelname)s/%(processName)s] [%(task_name)s(%(task_id)s)] %(message)s'
+    worker_task_log_format='[%(asctime)s: %(levelname)s/%(processName)s] [%(task_name)s(%(task_id)s)] %(message)s',  
+    imports=(
+        'orchestrator', 
+    )
 )
 
 #import the task from orchestrator
-from orchestrator import process_video_job
+# from orchestrator import process_video_job
 
 #register the task with celery
-app.task(process_video_job)
+# app.task(process_video_job)
+
 
 if __name__ == '__main__':
     app.start()

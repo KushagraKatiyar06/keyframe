@@ -1,6 +1,5 @@
 #This will run the full ai pipeline
 import os
-from app import app
 from celery import Task
 import database
 import script
@@ -8,6 +7,7 @@ import images_generated
 import voice_over
 import assemble
 import storage
+from app import app
 
 def create_silent_audio(job_id):
     """Create a silent audio file for testing without AWS"""

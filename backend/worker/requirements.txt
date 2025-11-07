@@ -1,4 +1,3 @@
-openai
 celery
 python-dotenv
 psycopg2-binary
@@ -7,4 +6,5 @@ openai
 boto3 
 requests
 mutagen 
+
 
