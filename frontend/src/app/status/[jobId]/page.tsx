@@ -32,6 +32,7 @@ export default function StatusPage({ params }: { params: { jobId: string } }) {
     const [error, setError] = useState<string | null>(null);
     const [isFeedOpen, setIsFeedOpen] = useState(true);
 
+    // Keep the delay state for a smooth transition from submission
     const [isAwaitingInitialStatus, setIsAwaitingInitialStatus] = useState(true);
 
     const jobId = params.jobId;
@@ -72,31 +73,44 @@ export default function StatusPage({ params }: { params: { jobId: string } }) {
 
     useEffect(() => {
 
+        // Use a ref to hold the interval ID so it persists across renders
+        // and can be cleared in the main cleanup phase.
+        let intervalId: NodeJS.Timeout | undefined;
+
+        // --- FIX 1: Polling Loop Control ---
+        // This function runs only when jobStatus, fetchStatus, or fetchFeed changes.
+
+        // If job is already done, clean up any residual timers and STOP here.
+        if (jobStatus?.status === 'COMPLETE' || jobStatus?.status === 'ERROR') {
+            return () => { }; // Return an empty cleanup function, essentially stopping the loop.
+        }
+
+        // 1. Initial Delay Timer (2 seconds)
         const initialDelayTimer = setTimeout(() => {
             setIsAwaitingInitialStatus(false);
-
 
             fetchStatus();
             fetchFeed();
 
-            const intervalId = setInterval(() => {
-                if (jobStatus?.status === 'COMPLETE' || jobStatus?.status === 'ERROR') {
-                    clearInterval(intervalId);
-                    return;
-                }
-                fetchStatus();
-            }, 5000);
+            // 2. Start Polling Interval (Only starts if status is still not complete/error)
+            intervalId = setInterval(fetchStatus, 5000);
 
-            return () => clearInterval(intervalId);
         }, 2000);
 
 
-        return () => clearTimeout(initialDelayTimer);
+        // 3. Global Cleanup Function
+        return () => {
+            clearTimeout(initialDelayTimer);
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+        };
 
+        // Dependencies remain the same, triggering the effect when status changes
     }, [fetchStatus, fetchFeed, jobStatus?.status]);
 
-    const CommunityFeedView = () => (
 
+    const CommunityFeedView = () => (
         <div className={styles.feedToggleContainer}>
             <button
                 className={styles.toggleButton}
@@ -126,10 +140,12 @@ export default function StatusPage({ params }: { params: { jobId: string } }) {
                         </div>
                     ))}
                 </div>
+
             </div>
         </div>
     );
 
+    // RENDER 1: COMPLETE STATE 
     if (jobStatus?.status === 'COMPLETE' && jobStatus.videoUrl) {
         return (
             <>
@@ -160,9 +176,8 @@ export default function StatusPage({ params }: { params: { jobId: string } }) {
                                     className={styles.videoTitleInput}
                                 />
 
-                                <button className={`${styles.iconButton} ${styles.editIcon}`}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /></svg>
-                                </button>
+
+                                {/* REMOVED PENCIL ICON (EDIT BUTTON) */}
 
                                 <a
                                     href={jobStatus.videoUrl}
@@ -170,7 +185,7 @@ export default function StatusPage({ params }: { params: { jobId: string } }) {
                                     className={styles.iconButton}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
-                                </a>
+                                </a >
 
                                 <button className={styles.iconButton}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
@@ -184,10 +199,10 @@ export default function StatusPage({ params }: { params: { jobId: string } }) {
     }
 
 
-
+    // RENDER 2: PROCESSING STATE (Combined logic)
     return (
         <>
-
+            {/* NAV BAR REMOVED FROM PROCESSING STATE */}
             <main className={styles.mainContainer}>
 
                 <div className={styles.processArea}>
@@ -206,13 +221,16 @@ export default function StatusPage({ params }: { params: { jobId: string } }) {
                         FILMING, NARRATING, KEYFRAMING... PLEASE WAIT
                     </p>
 
+                    {/* Progress Bar (Simulated Loading Bar) */}
                     <div className={styles.progressBarContainer}>
+                        {/* Progress fill */}
                         <div
                             className={styles.progressBarFill}
                             style={{ width: `${jobStatus ? jobStatus.progress : 0}%` }}
                         ></div>
                     </div>
 
+                    {/* Detailed Status (Optional, useful for debugging) */}
                     <p className={styles.detailStatus}>
                         Status: {jobStatus ? jobStatus.status : 'Loading...'} ({jobStatus?.progress}%)
                     </p>
@@ -220,6 +238,7 @@ export default function StatusPage({ params }: { params: { jobId: string } }) {
                     {error && <p className={styles.errorText}>{error}</p>}
                 </div>
 
+                {/* The Community Feed with Collapse/Expand  */}
                 <CommunityFeedView />
             </main>
         </>
