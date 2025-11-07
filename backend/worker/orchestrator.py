@@ -16,9 +16,12 @@ def create_silent_audio(job_id):
     os.makedirs(temp_dir, exist_ok=True)  # ADD THIS LINE
     audio_path = f'{temp_dir}/silent.mp3'
     
+
+    FFMPEG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'bin', 'ffmpeg.exe'))
+
     # create 60 seconds of silence
     subprocess.run([
-        'ffmpeg', '-y', '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=stereo',
+        FFMPEG_PATH, '-y', '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=stereo',
         '-t', '60', '-q:a', '9', '-acodec', 'libmp3lame', audio_path
     ], check=True)
     

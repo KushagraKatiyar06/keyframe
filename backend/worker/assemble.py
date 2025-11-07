@@ -34,8 +34,11 @@ def stitch_video(image_paths, audio_path, timings, job_id):
         
         # constructs the ffmpeg command
         # this command creates a video from images and syncs it with audio
+
+        FFMPEG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'bin', 'ffmpeg.exe'))
+
         ffmpeg_command = [
-            'ffmpeg',
+            FFMPEG_PATH,
             '-y',  # overwrite output file if it exists
             '-f', 'concat',  # use concat demuxer
             '-safe', '0',  # allow absolute paths

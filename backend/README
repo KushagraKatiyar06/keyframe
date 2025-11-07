@@ -12,10 +12,20 @@ This project requires specific system dependencies and two running external serv
 | :--- | :--- | :--- |
 | **Prerequisite** | Install Node.js (v18+) & Python (v3.10+) | Required for both services. |
 | **External Service**| Run **Redis** and **PostgreSQL** instances. | Required for the job queue and data persistence. |
-| **External Tool** | Install **FFmpeg** on the Worker machine. | **Crucial:** Must be in the system's **PATH** to prevent `FileNotFoundError`. |
 | **Config** | Create and populate **`.env`** in the **root directory**. | Requires API keys for OpenAI, Nebius, AWS, and Cloudflare R2. |
 | **API Setup** | `cd backend/api` then `npm install` | Installs Express, `pg`, `redis`, etc. |
 | **Worker Setup** | `cd backend/worker` then `pip install -r requirements.txt` | Installs Celery, `psycopg2`, `boto3`, etc. |
+
+### 🛠️ FFmpeg Setup (Project Local)
+
+For reliable execution across environments, **FFmpeg must be installed locally in the project structure.**
+
+1.  **Download:** Download the latest static FFmpeg executable (e.g., `ffmpeg-git-essentials.7z`) for Windows.
+2.  **Create Directory:** In the **root project directory** (`C:\Users\...\KeyFrame`), create a new folder named **`bin`**.
+3.  **Place Executable:** Extract the downloaded archive and copy **`ffmpeg.exe`** into the new **`bin/`** folder.
+4.  **Git Ignore:** Ensure your root `.gitignore` file contains the entry `/bin/` to prevent committing the binary.
+
+**Note:** The Python worker code (`orchestrator.py`, `assemble.py`, `storage.py`) is already configured to look for `ffmpeg.exe` in this specific `/bin/` location.
 
 ---
 
@@ -28,6 +38,7 @@ All services must run concurrently for end-to-end functionality.
 | **API Gateway** | `backend/api` | `node index.js` | Starts the server at `http://localhost:3000`. Initializes the PostgreSQL DB tables. |
 | **Worker Engine** | `backend/worker` | `celery -A app worker --loglevel=info --pool=solo` | **Windows Only:** `--pool=solo` is mandatory to fix multiprocessing errors. |
 | **Test Submission** | *Anywhere* (PowerShell) | `Invoke-RestMethod -Uri "http://localhost:3000/api/v1/generate" -Method POST -ContentType "application/json" -Body '{"prompt": "...", "style": "..."}'` | Triggers a job. |
+| **Access Local Video** | `backend/worker` | **Use path from Worker logs** | If using mock logic, locate the `video_url` path from the final Worker output, e.g.: `cp /tmp/.../final_video.mp4 ./my_video.mp4` |
 
 ---
 
@@ -62,7 +73,7 @@ The backend is separated into two main concerns: API Gateway (Handling HTTP) and
 
 | Error | Cause | Solution |
 | :--- | :--- | :--- |
-| `FileNotFoundError: [WinError 2] The system cannot find the file specified` | **FFmpeg** is missing or not in the system's PATH. | Install FFmpeg and confirm its executable directory is added to the Windows PATH variable. |
+| `FileNotFoundError: [WinError 2] the system cannot find the file specified` | The worker failed to find `ffmpeg.exe`. | Verify that `ffmpeg.exe` is located in the **root project directory's `/bin/` folder**. |
 | `PermissionError: Access is denied` | Celery's default multiprocessing pool fails on Windows. | Rerun the worker command with the **`--pool=solo`** argument. |
 | `SyntaxError: ...forgot a comma?` | Missing syntax (e.g., comma, closing parenthesis) in Python configuration (usually `app.py`). | Review Python syntax in `app.conf.update` or `Celery()` constructor. |
 | `ImportError: cannot import name 'process_video_job'` | Circular dependency between `app.py` and `orchestrator.py`. | Fixed by using Celery's `imports` setting and structuring imports correctly in both files. |

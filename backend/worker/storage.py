@@ -95,8 +95,10 @@ def generate_thumbnail(video_path, job_id):
     
     try:
         #ffmpeg command to extract a frame at 1 second
+        FFMPEG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'bin', 'ffmpeg.exe'))
+
         ffmpeg_command = [
-            'ffmpeg',
+            FFMPEG_PATH,
             '-y',  #overwrite if exists
             '-i', video_path,  #input video
             '-ss', '00:00:01',  #seek to 1 second

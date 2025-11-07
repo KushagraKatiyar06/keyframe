@@ -24,3 +24,7 @@ npm-debug.log*
 
 # Virtual Enviroment
 venv/
+
+
+# ffmeg
+/bin/
