@@ -1,0 +1,69 @@
+# ⚙️ KeyFrame Backend Services
+
+This directory contains the full stack for the KeyFrame video generation pipeline, including the **Node.js API Gateway** and the **Python Celery Worker**.
+
+---
+
+## 1. Prereqs & Setup
+
+This project requires specific system dependencies and two running external services.
+
+| Action | Command | Notes |
+| :--- | :--- | :--- |
+| **Prerequisite** | Install Node.js (v18+) & Python (v3.10+) | Required for both services. |
+| **External Service**| Run **Redis** and **PostgreSQL** instances. | Required for the job queue and data persistence. |
+| **External Tool** | Install **FFmpeg** on the Worker machine. | **Crucial:** Must be in the system's **PATH** to prevent `FileNotFoundError`. |
+| **Config** | Create and populate **`.env`** in the **root directory**. | Requires API keys for OpenAI, Nebius, AWS, and Cloudflare R2. |
+| **API Setup** | `cd backend/api` then `npm install` | Installs Express, `pg`, `redis`, etc. |
+| **Worker Setup** | `cd backend/worker` then `pip install -r requirements.txt` | Installs Celery, `psycopg2`, `boto3`, etc. |
+
+---
+
+## 2. Run Commands
+
+All services must run concurrently for end-to-end functionality.
+
+| Service | Directory to Run From | Command | Notes |
+| :--- | :--- | :--- | :--- |
+| **API Gateway** | `backend/api` | `node index.js` | Starts the server at `http://localhost:3000`. Initializes the PostgreSQL DB tables. |
+| **Worker Engine** | `backend/worker` | `celery -A app worker --loglevel=info --pool=solo` | **Windows Only:** `--pool=solo` is mandatory to fix multiprocessing errors. |
+| **Test Submission** | *Anywhere* (PowerShell) | `Invoke-RestMethod -Uri "http://localhost:3000/api/v1/generate" -Method POST -ContentType "application/json" -Body '{"prompt": "...", "style": "..."}'` | Triggers a job. |
+
+---
+
+## 3. Project File Structure & Overview
+
+The backend is separated into two main concerns: API Gateway (Handling HTTP) and Worker (Handling AI/Media Processing).
+
+### API Gateway (`backend/api`)
+
+| Component | File Location | Brief Overview |
+| :--- | :--- | :--- |
+| **Server/Routes** | `index.js` | Initializes Express, mounts routes, starts server, and calls DB setup. |
+| **Database** | `database.js` | PostgreSQL connection logic: `insertJob`, `updateJobStatus`, `getRecentCompletedVideos`. |
+| **Queue** | `redis.js` | Redis connection logic: formats and pushes jobs to the Celery queue. |
+| **Endpoints** | `routes/*.js` | Defines the API endpoints for `/generate`, `/status`, and `/feed`. |
+
+### Worker Engine (`backend/worker`)
+
+| Component | File Location | Role in Pipeline |
+| :--- | :--- | :--- |
+| **App Entry** | `app.py` | Celery application definition and task discovery configuration. |
+| **Orchestrator** | `orchestrator.py` | The main Celery task (`process_video_job`) that manages the 7-step video generation workflow. |
+| **Scripting** | `script.py` | Calls **OpenAI** (GPT-4o-mini) to generate the script JSON. |
+| **Images** | `images_generated.py` | Calls **Nebius AI** (Flux-Schnell) to generate 10 video keyframes. |
+| **Voice-Over** | `voice_over.py` | Calls **Amazon Polly** to generate the narration audio. |
+| **Assembly** | `assemble.py` | Uses **FFmpeg** to stitch images, timings, and audio into a final MP4 video. |
+| **Storage** | `storage.py` | Uploads video/thumbnail to **Cloudflare R2** and handles local cleanup. |
+
+---
+
+## 4. Troubleshooting Common Errors
+
+| Error | Cause | Solution |
+| :--- | :--- | :--- |
+| `FileNotFoundError: [WinError 2] The system cannot find the file specified` | **FFmpeg** is missing or not in the system's PATH. | Install FFmpeg and confirm its executable directory is added to the Windows PATH variable. |
+| `PermissionError: Access is denied` | Celery's default multiprocessing pool fails on Windows. | Rerun the worker command with the **`--pool=solo`** argument. |
+| `SyntaxError: ...forgot a comma?` | Missing syntax (e.g., comma, closing parenthesis) in Python configuration (usually `app.py`). | Review Python syntax in `app.conf.update` or `Celery()` constructor. |
+| `ImportError: cannot import name 'process_video_job'` | Circular dependency between `app.py` and `orchestrator.py`. | Fixed by using Celery's `imports` setting and structuring imports correctly in both files. |
+| `ValueError: SSL connection... redis://` | Celery is configured for SSL, but the `REDIS_URL` uses the unencrypted `redis://` scheme. | Review `app.py` and comment out any code setting `broker_use_ssl` if using a non-SSL Redis instance. |
