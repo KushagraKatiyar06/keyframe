@@ -44,6 +44,10 @@ def stitch_video(image_paths, audio_path, timings, job_id):
             '-safe', '0',  # allow absolute paths
             '-i', concat_file_path,  # input concat file with images
             '-i', audio_path,  # input audio file
+
+            '-map', '0:v', # Map the video stream (v) from the first input (0: images)
+            '-map', '1:a', # Map the audio stream (a) from the second input (1: audio file)
+
             '-vsync', 'vfr',  # variable frame rate to match timings
             '-pix_fmt', 'yuv420p',  # pixel format for compatibility
             '-c:v', 'libx264',  # video codec
