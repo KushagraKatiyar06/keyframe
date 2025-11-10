@@ -8,24 +8,13 @@ import voice_over
 import assemble
 import storage
 from app import app
+from dotenv import load_dotenv
+import subprocess # Keep subprocess for the mock failure handling
 
-def create_silent_audio(job_id):
-    """Create a silent audio file for testing without AWS"""
-    import subprocess
-    temp_dir = f'/tmp/keyframe_job_{job_id}'
-    os.makedirs(temp_dir, exist_ok=True)  # ADD THIS LINE
-    audio_path = f'{temp_dir}/silent.mp3'
-    
+# load environment variables for utility functions
+load_dotenv() 
 
-    FFMPEG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'bin', 'ffmpeg.exe'))
-
-    # create 60 seconds of silence
-    subprocess.run([
-        FFMPEG_PATH, '-y', '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=stereo',
-        '-t', '60', '-q:a', '9', '-acodec', 'libmp3lame', audio_path
-    ], check=True)
-    
-    return audio_path
+# --- REMOVED: The create_silent_audio function is deleted ---
     
 @app.task(bind=True)
 def process_video_job(self,job_data):
@@ -36,6 +25,10 @@ def process_video_job(self,job_data):
     job_id=job_data['id']
     prompt =job_data['prompt']
     style=job_data['style']
+    
+    # Define audio_path outside try/except for cleanup
+    audio_path = None
+    video_path = None
     
     try:
         print(f"Starting job {job_id}-Style:{style}")
@@ -50,17 +43,16 @@ def process_video_job(self,job_data):
         print(f"Job {job_id}: Generating images...")
         image_paths = images_generated.generate_images(script_data, job_id)
         
-        #need to ass the actual video api later for amazon polly
-        # step 3: TEMPORARY - skip voiceover (no AWS keys yet)
-        print(f"Job {job_id}: Skipping voiceover (no AWS keys)...")
-        audio_path = create_silent_audio(job_id)
+        # step 3: ENABLE AMAZON POLLY
+        print(f"Job {job_id}: Generating voiceover with Polly...")
+        audio_path = voice_over.generate_voice_over(script_data, job_id)
         
         # step 4:stitch everything together with ffmpeg
         print(f"Job {job_id}: Assembling video...")
         video_path = assemble.stitch_video(image_paths, audio_path, script_data['timings'], job_id)
         
-            # step 5:TEMPORARY - skip upload for testing
-        print(f"Job {job_id}: Skipping upload (testing locally)...")
+        # step 5: KEEP MOCK UPLOAD (Skipping R2)
+        print(f"Job {job_id}: Skipping upload (testing locally, Polly enabled)...")
         video_url = f"LOCAL: {video_path}"
         thumbnail_url = f"LOCAL: {video_path}"
         
@@ -85,3 +77,5 @@ def process_video_job(self,job_data):
         
         # raise the exception so celery knows it failed
         raise e
+        
+   
